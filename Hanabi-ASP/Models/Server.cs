@@ -85,30 +85,87 @@ namespace Hanabi_ASP.Models
             if (Accounts[idPlayer].NowPlay)
             {
                 int id = Accounts[idPlayer].TableId;
+                if (Tables[id].GameIsStarter)
+                    return false;
                 if (Tables[id].IdAdmin == idPlayer)
                 {
-                    
+                    int[] pls = Tables[id].ListPlayers();
+                    for (int i = 0; i < pls.Length; ++i)
+                    {
+                        Accounts[pls[i]].LeaveTable();
+                    }
+                    Tables.Remove(id);
+                    return true;
                 }
-                Tables[Accounts[idPlayer].TableId].LeavePlayer(idPlayer);
-                Accounts[idPlayer].LeaveTable();
+                else
+                {
+                    if (!Tables[Accounts[idPlayer].TableId].LeavePlayer(idPlayer))
+                        return false;
+                    Accounts[idPlayer].LeaveTable();
+                    return true;
+                }
             }
-            return true;
+            return false;
         }
         public bool UseHintColor(int idPlayer, int numPlayer, int numColor)
         {
-            return true;
+            if (Accounts[idPlayer].NowPlay)
+                return Tables[Accounts[idPlayer].TableId].UseHintColor(idPlayer, numPlayer, numColor);
+            return false;
         }
         public bool UseHintNumber(int idPlayer, int numPlayer, int Number)
         {
-            return true;
+            if (Accounts[idPlayer].NowPlay)
+                return Tables[Accounts[idPlayer].TableId].UseHintNumber(idPlayer, numPlayer, Number);
+            return false;
         }
         public bool PlaceCard(int idPlayer, int numPlayer, int NumCard)
         {
-            return true;
+            if (Accounts[idPlayer].NowPlay)
+                return Tables[Accounts[idPlayer].TableId].PlaceCard(idPlayer, NumCard);
+            return false;
         }
         public bool DropCard(int idPlayer, int numPlayer, int NumCard)
         {
-            return true;
+            if (Accounts[idPlayer].NowPlay)
+                return Tables[Accounts[idPlayer].TableId].DropCard(idPlayer, NumCard);
+            return false;
+        }
+        public bool StartGame(int idPlayer)
+        {
+            if (!Accounts[idPlayer].NowPlay)
+                return false;
+            int id = Accounts[idPlayer].TableId;
+            if (Tables[id].IdAdmin != idPlayer)
+                return false;
+            return Tables[id].StartGame();
+        }
+        public bool EndGame(int idPlayer)
+        {
+            if (!Accounts[idPlayer].NowPlay)
+                return false;
+            int id = Accounts[idPlayer].TableId;
+            if (Tables[id].IdAdmin != idPlayer)
+                return false;
+            return Tables[id].EndGame();
+        }
+        public bool KickPlayer(int idHow, int idKicks)
+        {
+            if (!Accounts[idHow].NowPlay)
+                return false;
+            int id = Accounts[idHow].TableId;
+            if (Tables[id].IdAdmin != idHow)
+                return false;
+            return Tables[id].LeavePlayer(idKicks);
+        }
+        public bool ForceStandUp(int idHow, int idKicks)
+        {
+            if (!Accounts[idHow].NowPlay)
+                return false;
+            int id = Accounts[idHow].TableId;
+            if (Tables[id].IdAdmin != idHow)
+                return false;
+            return Tables[id].PlayerStandUp(idKicks);
         }
         public TableInfo Get(int idPlayer)
         {

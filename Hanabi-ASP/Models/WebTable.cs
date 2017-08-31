@@ -10,7 +10,7 @@ namespace Hanabi_ASP.Models
         const int MaxPlayers = 5;
         const int MinPlayers = 3;
         public bool GameIsStarter { get; private set; }
-        private Hanabi.IGame TableGame;
+        private Hanabi.IGame TableGame; 
         private int SeatCountp;
         public int SeatCount
         {
@@ -149,6 +149,10 @@ namespace Hanabi_ASP.Models
             if (!GameIsStarter || Seats[TableGame.CurrentPlayer] != id)
                 return false;
             return TableGame.DropCard(numCard);
+        }
+        public int[] ListPlayers()
+        {
+            return Players.ToArray();
         }
     }
 
