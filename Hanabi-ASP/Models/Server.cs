@@ -12,6 +12,13 @@ namespace Hanabi_ASP.Models
         private Dictionary<int, WebTable> Tables;
         private Dictionary<string, int> GetIdByNick;//player
         private Dictionary<string, int> GetIdByName;//table
+        public Server()
+        {
+            Accounts = new Dictionary<int, WebPlayer>();
+            Tables = new Dictionary<int, WebTable>();
+            GetIdByName = new Dictionary<string, int>();
+            GetIdByNick = new Dictionary<string, int>();
+        }
         private bool NickIsGood(string nick)
         {
             if (nick.Length == 0 || nick.Length > 15)
@@ -38,7 +45,7 @@ namespace Hanabi_ASP.Models
                     return GetIdByNick[nick];
                 else
                     return -1;
-            }    
+            }
             if (!NickIsGood(nick) || !PassIsGood(pass))
                 return -1;
             int id = Utily.GetTag();
@@ -85,7 +92,7 @@ namespace Hanabi_ASP.Models
             if (Accounts[idPlayer].NowPlay)
             {
                 int id = Accounts[idPlayer].TableId;
-                if (Tables[id].GameIsStarter)
+                if (Tables[id].GameStarted)
                     return false;
                 if (Tables[id].IdAdmin == idPlayer)
                 {
@@ -167,9 +174,33 @@ namespace Hanabi_ASP.Models
                 return false;
             return Tables[id].PlayerStandUp(idKicks);
         }
-        public TableInfo Get(int idPlayer)
+        public ServerInfo Get(int idPlayer)
         {
+            var ans = new ServerInfo();
+            ans.IdPlayer = idPlayer;
+            ans.NickById = new Dictionary<int, string>();
+            if (Accounts[idPlayer].NowPlay)
+            {
+                ans.IdTabel = Accounts[idPlayer].TableId;
+                ans.Table = Tables[Accounts[idPlayer].TableId].GetTableInfo(idPlayer);
+                for (int i = 0; i < ans.Table.Players.Length; ++i)
+                    ans.NickById.Add(ans.Table.Players[i], Accounts[ans.Table.Players[i]].Nick);
+            }
+            else
+            {
+                ans.IdTabel = -1;
+                ans.Table = null;
+                ans.NickById.Add(idPlayer, Accounts[idPlayer].Nick);
+            }
             return null;
         }
+    }
+
+    public class ServerInfo
+    {
+        public int IdPlayer { get; set; }
+        public int IdTabel { get; set; }
+        public Dictionary<int, string> NickById { get; set; }
+        public TableInfo Table { get; set; }
     }
 }

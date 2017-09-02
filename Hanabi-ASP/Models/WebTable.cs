@@ -9,7 +9,7 @@ namespace Hanabi_ASP.Models
     {
         const int MaxPlayers = 5;
         const int MinPlayers = 3;
-        public bool GameIsStarter { get; private set; }
+        public bool GameStarted { get; private set; }
         private Hanabi.IGame TableGame; 
         private int SeatCountp;
         public int SeatCount
@@ -35,7 +35,7 @@ namespace Hanabi_ASP.Models
         }
         public int IdAdmin { get; private set; }
         public string Password { get; private set; }
-        public Hanabi.GameType CurrentGameType { get; set; }
+        public Hanabi.GameType CurrentGameType { get; private set; }
         private HashSet<int> Players;
         private List<int> Seats;
 
@@ -47,7 +47,7 @@ namespace Hanabi_ASP.Models
             SeatCount = 3;
             Players.Add(idAdmin);
             Seats[0] = idAdmin;
-            GameIsStarter = false;
+            GameStarted = false;
             TableGame = null;
             CurrentGameType = Hanabi.GameType.FiveColor;
         }
@@ -55,14 +55,14 @@ namespace Hanabi_ASP.Models
         {
             if (Players.Count >= MaxPlayers)
                 return false;
-            if (Players.Contains(id) || GameIsStarter)
+            if (Players.Contains(id) || GameStarted)
                 return false;
             Players.Add(id);
             return true;
         }
         public bool LeavePlayer(int id)
         {
-            if (Players.Contains(id) && GameIsStarter)
+            if (Players.Contains(id) && GameStarted)
             {
                 Players.Remove(id);
                 return true;
@@ -71,7 +71,7 @@ namespace Hanabi_ASP.Models
         }
         public bool PlayerSitDown(int id, int placeNumber)
         {
-            if (placeNumber < 0 || placeNumber >= SeatCount || !Players.Contains(id) || GameIsStarter)
+            if (placeNumber < 0 || placeNumber >= SeatCount || !Players.Contains(id) || GameStarted)
                 return false;
             for (int i = 0; i < SeatCount; i++)
             {
@@ -83,7 +83,7 @@ namespace Hanabi_ASP.Models
         }
         public bool PlayerStandUp(int id)
         {
-            if (GameIsStarter)
+            if (GameStarted)
                 return false;
             var ans = false;
             for (int i = 0; i < SeatCount; ++i)
@@ -96,15 +96,15 @@ namespace Hanabi_ASP.Models
         }
         public bool EndGame()
         {
-            if (!GameIsStarter)
+            if (!GameStarted)
                 return false;
             TableGame = null;
-            GameIsStarter = false;
+            GameStarted = false;
             return true;
         }
         public bool StartGame()
         {
-            if (GameIsStarter)
+            if (GameStarted)
                 return false;
             var isGood = true;
             for (int i = 0; i < SeatCount; i++)
@@ -112,7 +112,7 @@ namespace Hanabi_ASP.Models
             isGood = isGood && Players.Count == SeatCount;
             if (!isGood)
                 return false;
-            GameIsStarter = true;
+            GameStarted = true;
             TableGame = new Hanabi.Game(CurrentGameType, Players.Count);
             return true;
         }
@@ -128,25 +128,25 @@ namespace Hanabi_ASP.Models
         }
         public bool UseHintColor(int id, int numPlayer, int numColor)
         {
-            if (!GameIsStarter || Seats[TableGame.CurrentPlayer] != id)
+            if (!GameStarted || Seats[TableGame.CurrentPlayer] != id)
                 return false;
             return TableGame.UseHintColor(numPlayer, numColor);
         }
         public bool UseHintNumber(int id, int numPlayer, int Number)
         {
-            if (!GameIsStarter || Seats[TableGame.CurrentPlayer] != id)
+            if (!GameStarted || Seats[TableGame.CurrentPlayer] != id)
                 return false;
             return TableGame.UseHintNumber(numPlayer, Number);
         }
         public bool PlaceCard(int id,  int numCard)
         {
-            if (!GameIsStarter || Seats[TableGame.CurrentPlayer] != id)
+            if (!GameStarted || Seats[TableGame.CurrentPlayer] != id)
                 return false;
             return TableGame.PlaceCard(numCard);
         }
         public bool DropCard(int id, int numCard)
         {
-            if (!GameIsStarter || Seats[TableGame.CurrentPlayer] != id)
+            if (!GameStarted || Seats[TableGame.CurrentPlayer] != id)
                 return false;
             return TableGame.DropCard(numCard);
         }
@@ -154,10 +154,39 @@ namespace Hanabi_ASP.Models
         {
             return Players.ToArray();
         }
+        public bool ChangeGameType(int i)
+        {
+            if (i < 0 || i > 2 || GameStarted)
+                return false;
+            CurrentGameType = (Hanabi.GameType)i;
+            return true;
+        }
+        public TableInfo GetTableInfo(int idPlayer)
+        {
+            var ans = new TableInfo();
+            ans.Players = Players.ToArray();
+            ans.Seats = new int[SeatCount];
+            for (int i = 0; i < SeatCount; ++i)
+                ans.Seats[i] = Seats[i];
+            if (GameStarted)
+            {
+                int numPlayer = -1;
+                for (int i = 0; i < SeatCount; ++i)
+                    if (idPlayer == Seats[i])
+                        numPlayer = i;
+                ans.Game = TableGame.GetGameInfo(numPlayer);
+            }
+            else
+                ans.Game = null;
+            return ans;
+        }
     }
 
     public class TableInfo
     {
-
+        public int[] Players { get; set; }
+        public int[] Seats { get; set; }
+        public bool GameStarted { get; set; }
+        public Hanabi.GameInfo Game { get; set; }
     }
 }

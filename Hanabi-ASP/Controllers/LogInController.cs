@@ -11,9 +11,12 @@ namespace Hanabi_ASP.Controllers
     public class LogInController : ApiController
     {
         [HttpPost]
-        public bool Post([FromBody] LogInInfo s)
+        public Dictionary<int, string> Post([FromBody] LogInInfo s)
         {
-            return true;
+            var ans = new Dictionary<int, string>();
+            ans.Add(10, "20");
+            ans.Add(30, "id");
+            return ans;
         }
     }
 

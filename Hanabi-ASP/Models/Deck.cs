@@ -21,7 +21,6 @@ namespace Hanabi
         public Deck(GameType gt)
         {
             int len;
-            CardQueue = new Queue<ICard>();
             if (gt == GameType.FiveColor)
                 len = 50;
             else
@@ -34,7 +33,7 @@ namespace Hanabi
             for (int i = 0; i < len; i++)
             {
                 if (seq[i] >= 50)
-                    CardQueue.Enqueue(new Card(5, seq[i] - 49));
+                    CardQueue.Enqueue(new Card(5, seq[i] - 49, gt));
                 else
                 {
                     int color = seq[i] / 10;
@@ -45,7 +44,7 @@ namespace Hanabi
                         num = 5;
                     else
                         num = (num - 1) / 2;
-                    CardQueue.Enqueue(new Card(color, num));
+                    CardQueue.Enqueue(new Card(color, num, gt));
                 }
             }
         }

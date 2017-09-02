@@ -8,35 +8,57 @@ namespace Hanabi
 {
     public class Card : ICard
     {
+        public GameType CurrentGameType { get; private set; }
         public int Color { get; private set; }
         public int Number { get; private set; }
-        public bool KnowColor { get; private set; }
-        public bool KnowNumber { get; private set; }
+        public int KnowColor { get; private set; }
+        public int KnowNumber { get; private set; }
 
-        public Card(int Color, int Number)
+
+        public Card(int Color, int Number, GameType CurrentGameType)
         {
             this.Color = Color;
             this.Number = Number;
-            KnowColor = KnowNumber = false;
+            this.CurrentGameType = CurrentGameType;
+            KnowColor = -1;
+            KnowNumber = -1;
         }
-
-        public void ReciveHintColor(int NumColor)
+        public void ReceiveHintColor(int NumColor)
         {
-            KnowColor = KnowColor || (NumColor == Color) || (Color == 5);
+            if ((Color == NumColor || (KnowColor == -1 && Color == 5 && CurrentGameType == GameType.RainbowIsEvery)))
+                KnowColor = NumColor;
+            else if(Color == 5 && CurrentGameType == GameType.RainbowIsEvery)
+                KnowColor = 5;
         }
-        public void ReciveHintNumber(int Number)
+        public void ReceiveHintNumber(int Number)
         {
-            KnowNumber = KnowNumber || (Number == this.Number);
+            if (this.Number == Number)
+                KnowNumber = Number;
+        }
+        private Card(int Colo, int Number, int KnowColor, int KnowNumber)
+        {
+            this.Color = Color;
+            this.Number = Number;
+            this.KnowColor = KnowColor;
+            this.KnowNumber = KnowNumber;
+        }
+        public ICard GetInfo(bool HideCard)
+        {
+            if (HideCard)
+                return new Card(-1, -1, KnowColor, KnowNumber);
+            return new Card(Color, Number, KnowColor, KnowNumber);
         }
     }
 
     public interface ICard
     {
+        GameType CurrentGameType { get; }
         int Color { get; }
         int Number { get; }
-        bool KnowColor { get; }
-        bool KnowNumber { get; }
-        void ReciveHintColor(int NumColor);
-        void ReciveHintNumber(int Number);
+        int KnowColor { get; }
+        int KnowNumber { get; }
+        void ReceiveHintColor(int NumColor);
+        void ReceiveHintNumber(int Number);
+        ICard GetInfo(bool HideCard);
     }
 }
