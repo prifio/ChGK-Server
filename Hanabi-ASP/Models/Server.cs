@@ -126,13 +126,13 @@ namespace Hanabi_ASP.Models
                 return Tables[Accounts[idPlayer].TableId].UseHintNumber(idPlayer, numPlayer, Number);
             return false;
         }
-        public bool PlaceCard(int idPlayer, int numPlayer, int NumCard)
+        public bool PlaceCard(int idPlayer, int NumCard)
         {
             if (Accounts[idPlayer].NowPlay)
                 return Tables[Accounts[idPlayer].TableId].PlaceCard(idPlayer, NumCard);
             return false;
         }
-        public bool DropCard(int idPlayer, int numPlayer, int NumCard)
+        public bool DropCard(int idPlayer, int NumCard)
         {
             if (Accounts[idPlayer].NowPlay)
                 return Tables[Accounts[idPlayer].TableId].DropCard(idPlayer, NumCard);
@@ -186,6 +186,19 @@ namespace Hanabi_ASP.Models
                 return false;
             return Tables[Accounts[idPlayer].TableId].ChangeSeatsCount(NewCount);
         }
+        public bool SitDown(int idPlayer, int numSeat)
+        {
+            if (!Accounts[idPlayer].NowPlay)
+                return false;
+            return Tables[Accounts[idPlayer].TableId].PlayerSitDown(idPlayer, numSeat);
+        }
+        public bool StandUp(int idPlayer)
+        {
+            if (!Accounts[idPlayer].NowPlay)
+                return false;
+            return Tables[Accounts[idPlayer].TableId].PlayerStandUp(idPlayer);
+        }
+
         public ServerInfo Get(int idPlayer)
         {
             var ans = new ServerInfo();
