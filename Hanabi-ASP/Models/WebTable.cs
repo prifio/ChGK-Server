@@ -161,6 +161,13 @@ namespace Hanabi_ASP.Models
             CurrentGameType = (Hanabi.GameType)i;
             return true;
         }
+        public bool ChangeSeatsCount(int cnt)
+        {
+            if (GameStarted || cnt > MaxPlayers || cnt < MinPlayers)
+                return false;
+            SeatCount = cnt;
+            return true;
+        }
         public TableInfo GetTableInfo(int idPlayer)
         {
             var ans = new TableInfo();

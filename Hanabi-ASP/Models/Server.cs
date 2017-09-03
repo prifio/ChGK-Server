@@ -174,6 +174,18 @@ namespace Hanabi_ASP.Models
                 return false;
             return Tables[id].PlayerStandUp(idKicks);
         }
+        public bool ChangeGameType(int idPlayer, int NewGameType)
+        {
+            if (!Accounts[idPlayer].NowPlay || Tables[Accounts[idPlayer].TableId].IdAdmin != idPlayer)
+                return false;
+            return Tables[Accounts[idPlayer].TableId].ChangeGameType(NewGameType);
+        }
+        public bool ChangeSeatsCount(int idPlayer, int NewCount)
+        {
+            if (!Accounts[idPlayer].NowPlay || Tables[Accounts[idPlayer].TableId].IdAdmin != idPlayer)
+                return false;
+            return Tables[Accounts[idPlayer].TableId].ChangeSeatsCount(NewCount);
+        }
         public ServerInfo Get(int idPlayer)
         {
             var ans = new ServerInfo();

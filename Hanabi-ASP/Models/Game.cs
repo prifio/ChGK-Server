@@ -132,9 +132,9 @@ namespace Hanabi
             ans.CountHints = CountHints;
             ans.Result = Result;
             ans.GameIsEnd = GameIsEnd;
-            ans.Tabel = new int[Tabel.Length];
+            ans.Table = new int[Tabel.Length];
             for (int i = 0; i < Tabel.Length; i++)
-                ans.Tabel[i] = Tabel[i];
+                ans.Table[i] = Tabel[i];
             ans.DropsCards = new ICard[DropsCards.Count];
             for (int i = 0; i < DropsCards.Count; i++)
                 ans.DropsCards[i] = new Card(DropsCards[i].Color, DropsCards[i].Number, CurrentGameType);
@@ -188,7 +188,7 @@ namespace Hanabi
         public int CountFall { get; set; }
         public int Result { get; set; }
         public bool GameIsEnd { get; set; }
-        public int[] Tabel { get; set; }
+        public int[] Table { get; set; }
         public GameType CurrentGameType { get; set; }
         public ICard[] DropsCards { get; set; }
         public PlayerInfo[] Players { get; set; }
