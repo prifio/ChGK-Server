@@ -59,8 +59,8 @@ namespace Hanabi_ASP.Models
                 return -1;
             if (!NickIsGood(name) || !PassIsGood(pass))
                 return -1;
-            int id = Utily.Next();
-            Tables.Add(id, new WebTable(idPlayer));
+            int id = Utily.GetTag();
+            Tables.Add(id, new WebTable(idPlayer, pass));
             GetIdByName.Add(name, id);
             Accounts[idPlayer].JoinTable(id);
             return id;

@@ -20,6 +20,7 @@ namespace Hanabi
         
         public Deck(GameType gt)
         {
+            CardQueue = new Queue<ICard>();
             int len;
             if (gt == GameType.FiveColor)
                 len = 50;

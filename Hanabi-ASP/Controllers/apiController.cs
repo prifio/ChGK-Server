@@ -4,13 +4,14 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.ComponentModel.DataAnnotations;
 using Hanabi;
 
 namespace Hanabi_ASP.Controllers
 {
     public class apiController : ApiController
     {
-        Models.Server MainServer = new Models.Server();
+        static Models.Server MainServer = new Models.Server();
 
         [HttpPost]
         public int LogIn([FromBody] LogInInfo s)
@@ -150,6 +151,7 @@ namespace Hanabi_ASP.Controllers
     public class TurnCardInfo
     {
         public int idPlayer { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string PlayerPassword { get; set; }
         public int numCard { get; set; }
     }
@@ -157,6 +159,7 @@ namespace Hanabi_ASP.Controllers
     public class HintNumberInfo
     {
         public int idPlayer { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string PlayerPassword { get; set; }
         public int Number { get; set; }
         public int numPlayer { get; set; }
@@ -165,6 +168,7 @@ namespace Hanabi_ASP.Controllers
     public class HintColorInfo
     {
         public int idPlayer { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string PlayerPassword { get; set; }
         public int numColor { get; set; }
         public int numPlayer { get; set; }
@@ -173,6 +177,7 @@ namespace Hanabi_ASP.Controllers
     public class ChangeSeatsInfo
     {
         public int idPlayer { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string PlayerPassword { get; set; }
         public int SeatsInfo { get; set; }
     }
@@ -180,6 +185,7 @@ namespace Hanabi_ASP.Controllers
     public class GameTypeInfo
     {
         public int idPlayer { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string PlayerPassword { get; set; }
         public int newGameType { get; set; }
     }
@@ -187,6 +193,7 @@ namespace Hanabi_ASP.Controllers
     public class KickInfo
     {
         public int idPlayer { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string PlayerPassword { get; set; }
         public int idKicksPlayer { get; set; }
     }
@@ -194,6 +201,7 @@ namespace Hanabi_ASP.Controllers
     public class ForceStandUpInfo
     {
         public int idPlayer { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string PlayerPassword { get; set; }
         public int idStandingPlayer { get; set; }
     }
@@ -201,6 +209,7 @@ namespace Hanabi_ASP.Controllers
     public class SitDownInfo
     {
         public int idPlayer { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string PlayerPassword { get; set; }
         public int numSeat { get; set; }
     }
@@ -208,20 +217,27 @@ namespace Hanabi_ASP.Controllers
     public class PlayerInfo
     {
         public int idPlayer { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string PlayerPassword { get; set; }
     }
 
     public class TableInfo
     {
         public int idPlayer { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string PlayerPassword { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string TableName { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string TablePassword { get; set; }
     }
 
+    
     public class LogInInfo
     {
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string Nick { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string Password { get; set; }
     }
 }

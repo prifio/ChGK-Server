@@ -16,7 +16,7 @@ namespace Hanabi_ASP.Models
         {
             get
             {
-                return SeatCount;
+                return SeatCountp;
             }
             private set
             {
@@ -39,7 +39,7 @@ namespace Hanabi_ASP.Models
         private HashSet<int> Players;
         private List<int> Seats;
 
-        public WebTable(int idAdmin)
+        public WebTable(int idAdmin, string pass)
         {
             this.IdAdmin = idAdmin;
             Players = new HashSet<int>();
@@ -50,6 +50,7 @@ namespace Hanabi_ASP.Models
             GameStarted = false;
             TableGame = null;
             CurrentGameType = Hanabi.GameType.FiveColor;
+            Password = pass;
         }
         public bool JoinPlayer(int id)
         {
