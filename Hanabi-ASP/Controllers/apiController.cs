@@ -6,6 +6,8 @@ using System.Net.Http;
 using System.Web.Http;
 using System.ComponentModel.DataAnnotations;
 using Hanabi;
+using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace Hanabi_ASP.Controllers
 {
@@ -224,7 +226,7 @@ namespace Hanabi_ASP.Controllers
     public class TableInfo
     {
         public int idPlayer { get; set; }
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        [DisplayFormat(ConvertEmptyStringToNull = false, NullDisplayText = "")]
         public string PlayerPassword { get; set; }
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string TableName { get; set; }
@@ -232,12 +234,16 @@ namespace Hanabi_ASP.Controllers
         public string TablePassword { get; set; }
     }
 
-    
+    [DataContract]
     public class LogInInfo
     {
+        [DataMember]
         [DisplayFormat(ConvertEmptyStringToNull = false)]
+        [DefaultValue("")]
         public string Nick { get; set; }
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        [DataMember]
+        [DisplayFormat(ConvertEmptyStringToNull = false, NullDisplayText = "")]
+        [DefaultValue("")]
         public string Password { get; set; }
     }
 }

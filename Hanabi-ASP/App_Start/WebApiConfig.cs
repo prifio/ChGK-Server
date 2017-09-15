@@ -9,6 +9,8 @@ namespace Hanabi_ASP
     {
         public static void Register(HttpConfiguration config)
         {
+            var smth = GlobalConfiguration.Configuration.Formatters.JsonFormatter;
+            
             // Web API configuration and services
 
             // Web API routes
