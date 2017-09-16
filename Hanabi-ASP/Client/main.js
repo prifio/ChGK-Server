@@ -13,6 +13,7 @@ function init() {
         JoinButton: null,
         Type: "Create"
     };
+    info = null
     MainDiv = document.getElementById("main");
     PlayerPassword = "";
     PlayerId = -1;
@@ -22,6 +23,47 @@ function init() {
     TablePassword = "";
     NowState = "LogIn";
     BuildLogIn("Player");
+    tim = null;
+}
+
+function UpDateCallBack(newInfo) {
+    if (NowState == "LogIn")
+        return;
+    var NewState;
+    if (newInfo.TableId == -1)
+        Newstate = "PickTable";
+    else if (!newInfo.Table.GameStarted)
+        NewState = "Prepare";
+    else
+        NewState = "Game";
+    info = newInfo;
+    if (NewState != NowState) {
+        NowState = NewState;
+        if (NowState == "PickTable") {
+            BuildPickTable();
+        }
+        else if (NowState == "Prepare") {
+            BuildPrepare();
+        }
+        else {
+            BuildGame();
+        }
+    }
+    else {
+        if (NowState == "Prepare") {
+            UpDatePrepare();
+        }
+        else if (NowState == "Game") {
+            UpDateGame();
+        }
+    }
+}
+
+function UpDate() {
+    $.get("../api/GetInfo", {
+        idPlayer: PlayerId,
+        PlayerPassword: PlayerPassword
+    }, UpDateCallBack);
 }
 
 function LogInCallBack(id) {
@@ -32,6 +74,7 @@ function LogInCallBack(id) {
             LogInState.DescriptionP.innerText = "Incorrect table's name or password!";
     }
     else {
+        tim = setInterval(UpDate, 1000);
         if (LogInState.type == "Player") {
             PlayerId = id;
             PlayerPassword = LogInState.InputPassword.value;
@@ -57,7 +100,7 @@ function LogInEvent() {
     else if (PickTableState.Type == "Create")
         $.post('../api/CreateTable', {
             "PlayerId": PlayerId,
-            "PlayerPassword":PlayerPassword,
+            "PlayerPassword": PlayerPassword,
             "TableName": LogInState.InputNick.value,
             "TablePassword": LogInState.InputPassword.value
         }, LogInCallBack, 'json');
@@ -75,6 +118,7 @@ function CreateTableEvent() {
     NowState = "LogIn";
     LogInState.type = "Table";
     BuildLogIn("Table");
+    clearInterval(tim);
 }
 
 function JoinTableEvent() {
@@ -82,32 +126,41 @@ function JoinTableEvent() {
     NowState = "LogIn";
     LogInState.type = "Table";
     BuildLogIn("Table");
+    clearInterval(tim);
+}
+
+function UpdatePrepate()
+{
+
+}
+
+function UpDateGame()
+{
+
 }
 
 function BuildLogIn(type) {
-    ClearMainDiv();
-    MainDiv.appendChild(CreateComponentP("Log In"));
-    LogInState.DescriptionP = document.createElement("p");
-    if (type == "Player")
-        LogInState.DescriptionP.innerText = "Enter your nick and password";
-    else
-        LogInState.DescriptionP.innerText = "Enter table's name and password";
-    LogInState.InputNick = document.createElement("input");
-    LogInState.InputNick.setAttribute("type", "text");
-    if (type == "Player")
-        LogInState.InputNick.setAttribute("placeholder", "your nick");
-    else
-        LogInState.InputNick.setAttribute("placeholder", "table's name");
-    LogInState.InputPassword = document.createElement("input");
-    LogInState.InputPassword.setAttribute("type", "text");
-    LogInState.InputPassword.setAttribute("placeholder", "password");
-    LogInState.SubmitButton = document.createElement("button");
-    LogInState.SubmitButton.innerText = "Log In";
+    MainDiv.innerHTML = `
+        <form class="Centr">
+            <div class="form-group">
+                <label for="email" class="control-label" id="NickLabel">Nick:</label>
+                <input type="email" class="form-control" id="email" placeholder="Your nick"></input>
+            </div>
+            <div class="form-group">
+                <label for="pwd">Password:</label>
+                <input type="password" class="form-control" id="pswd" placeholder="Password"></input>
+            </div>
+            <button type="Войти" class="btn btn-success" id="LogInButton">Log In</button>
+        </form>`;
+    LogInState.SubmitButton = document.getElementById("LogInButton");
     LogInState.SubmitButton.onclick = LogInEvent;
-    MainDiv.appendChild(LogInState.DescriptionP);
-    MainDiv.appendChild(LogInState.InputNick);
-    MainDiv.appendChild(LogInState.InputPassword);
-    MainDiv.appendChild(LogInState.SubmitButton);
+    LogInState.InputNick = document.getElementById("email");
+    if (type != "Player") {
+        LogInState.InputNick.setAttribute("placeholder", "Table's name");
+        var lab = document.getElementById("NickLabel");
+        lab.innerText = "Table:";
+    }
+    LogInState.InputPassword = document.getElementById("pswd");
 }
 
 function BuildPickTable() {
@@ -121,6 +174,14 @@ function BuildPickTable() {
     MainDiv.appendChild(CreateComponentP("Now play " + PlayerNick));
     MainDiv.appendChild(PickTableState.CreateButton);
     MainDiv.appendChild(PickTableState.JoinButton);
+}
+
+function BuildPrepare() {
+
+}
+
+function BuildGame() {
+
 }
 
 function ClearMainDiv() {
