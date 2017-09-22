@@ -150,8 +150,8 @@ function BuildLogIn(type) {
                 <label for="pwd">Password:</label>
                 <input type="password" class="form-control" id="pswd" placeholder="Password"></input>
             </div>
-            <button type="Войти" class="btn btn-success" id="LogInButton">Log In</button>
-        </form>`;
+            <button class="btn btn-success" id="LogInButton" style="width:49%">Log In</button>
+    	<button class="btn pull-right" id="back" style="width:49%; display:none">Back</button></form>`;
     LogInState.SubmitButton = document.getElementById("LogInButton");
     LogInState.SubmitButton.onclick = LogInEvent;
     LogInState.InputNick = document.getElementById("email");
