@@ -131,6 +131,13 @@ function JoinTableEvent() {
     clearInterval(tim);
 }
 
+function BackEvent()
+{
+    NowState = "PickTable";
+    BuildPickTable();
+    tim = setInterval(UpDate, 1000);
+}
+
 function UpdatePrepate() {
 }
 
@@ -151,7 +158,7 @@ function BuildLogIn(type) {
             </div>
             <p id = "ErrorP" class ="text-danger" style="display:none">Вы неверно ввели Nick or password</p>
             <button type="button" class="btn btn-success" id="LogInButton">Log In</button>
-        </form>`;
+    	<button type="button" class="btn pull-right" id="back" style="width:49%; display:none">Back</button></form>`;
     LogInState.SubmitButton = document.getElementById("LogInButton");
     LogInState.SubmitButton.onclick = LogInEvent;
     LogInState.InputNick = document.getElementById("nick");
@@ -159,6 +166,13 @@ function BuildLogIn(type) {
         LogInState.InputNick.setAttribute("placeholder", "Table's name");
         var lab = document.getElementById("NickLabel");
         lab.innerText = "Table:";
+        var BackElem = document.getElementById("back");
+        BackElem.setAttribute("style", style = "width:49%;");
+        BackElem.onclick = BackEvent;
+        if (PickTableState.Type == "Create")
+            LogInState.SubmitButton.innerText = "Create";
+        else if (PickTableState.Type == "Join")
+            LogInState.SubmitButton.innerText = "Join";
     }
     LogInState.InputPassword = document.getElementById("pswd");
     LogInState.Form = document.getElementById("Form");
@@ -180,7 +194,7 @@ function BuildPickTable() {
         <div class = "col-sm-4">
         <div class = "button-group-vertical">
         <button type = "button" id="btnCreate" class = "btn btn-primary btn-block btn-lg">
-            Create new Tabel
+            Create new table
         </button>
         <button class = "btn btn-primary btn-block btn-lg" id ="btnJoin">
             Join to exist table
