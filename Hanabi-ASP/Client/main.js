@@ -6,12 +6,16 @@ function init() {
         InputNick: null,
         InputPassword: null,
         SubmitButton: null,
-        DescriptionP: null
+        Form: null,
+        P: null
     };
     PickTableState = {
         CreateButton: null,
         JoinButton: null,
         Type: "Create"
+    };
+    PrepareState = {
+        PlayerList: null
     };
     info = null
     MainDiv = document.getElementById("main");
@@ -68,10 +72,8 @@ function UpDate() {
 
 function LogInCallBack(id) {
     if (id == -1) {
-        if (LogInState.type == "Player")
-            LogInState.DescriptionP.innerText = "Incorrect nick or password!";
-        else
-            LogInState.DescriptionP.innerText = "Incorrect table's name or password!";
+        LogInState.Form.setAttribute("class", "Center has-error");
+        LogInState.P.setAttribute("style", "");
     }
     else {
         tim = setInterval(UpDate, 1000);
@@ -99,7 +101,7 @@ function LogInEvent() {
         }, LogInCallBack, 'json');
     else if (PickTableState.Type == "Create")
         $.post('../api/CreateTable', {
-            "PlayerId": PlayerId,
+            "idPlayer": PlayerId,
             "PlayerPassword": PlayerPassword,
             "TableName": LogInState.InputNick.value,
             "TablePassword": LogInState.InputPassword.value
@@ -129,51 +131,70 @@ function JoinTableEvent() {
     clearInterval(tim);
 }
 
-function UpdatePrepate()
-{
-
+function UpdatePrepate() {
 }
 
-function UpDateGame()
-{
+function UpDateGame() {
 
 }
 
 function BuildLogIn(type) {
     MainDiv.innerHTML = `
-        <form class="Centr">
+        <form class ="Center" id="Form">
             <div class="form-group">
-                <label for="email" class="control-label" id="NickLabel">Nick:</label>
-                <input type="email" class="form-control" id="email" placeholder="Your nick"></input>
+                <label class="control-label" id="NickLabel">Nick:</label>
+                <input type="text" class="form-control" id="nick" placeholder="Your nick"></input>
             </div>
             <div class="form-group">
-                <label for="pwd">Password:</label>
+                <label class ="control-label">Password: </label>
                 <input type="password" class="form-control" id="pswd" placeholder="Password"></input>
             </div>
-            <button type="Войти" class="btn btn-success" id="LogInButton">Log In</button>
+            <p id = "ErrorP" class ="text-danger" style="display:none">Вы неверно ввели Nick or password</p>
+            <button type="button" class="btn btn-success" id="LogInButton">Log In</button>
         </form>`;
     LogInState.SubmitButton = document.getElementById("LogInButton");
     LogInState.SubmitButton.onclick = LogInEvent;
-    LogInState.InputNick = document.getElementById("email");
+    LogInState.InputNick = document.getElementById("nick");
     if (type != "Player") {
         LogInState.InputNick.setAttribute("placeholder", "Table's name");
         var lab = document.getElementById("NickLabel");
         lab.innerText = "Table:";
     }
     LogInState.InputPassword = document.getElementById("pswd");
+    LogInState.Form = document.getElementById("Form");
+    LogInState.P = document.getElementById("ErrorP");
 }
 
 function BuildPickTable() {
-    ClearMainDiv();
-    PickTableState.CreateButton = document.createElement("Button");
-    PickTableState.CreateButton.innerText = "Create table";
+    MainDiv.innerHTML = `
+      <div class = "row">
+      <div class = "col-xs-9"></div>
+      <div class = "col-xs-2"><button class = "btn btn-success"><div id="CurNick" style = "font-weight:bold"></div></button>
+      </div>
+      <div class = "col-xs-1"></div>
+
+      </div>
+    <div style = "width: 100%;height: 65%; position:absolute; top: 35%">
+    <div class = "row">
+        <div class = "col-sm-4"></div>
+        <div class = "col-sm-4">
+        <div class = "button-group-vertical">
+        <button type = "button" id="btnCreate" class = "btn btn-primary btn-block btn-lg">
+            Create new Tabel
+        </button>
+        <button class = "btn btn-primary btn-block btn-lg" id ="btnJoin">
+            Join to exist table
+        </button>
+        </div>
+        </div>
+        <div class = "col-sm-4"></div>
+    </div>
+    </div>`;
+    PickTableState.CreateButton = document.getElementById("btnCreate");
     PickTableState.CreateButton.onclick = CreateTableEvent;
-    PickTableState.JoinButton = document.createElement("Button");
-    PickTableState.JoinButton.innerText = "Join to table";
+    PickTableState.JoinButton = document.getElementById("btnJoin");
     PickTableState.JoinButton.onclick = JoinTableEvent;
-    MainDiv.appendChild(CreateComponentP("Now play " + PlayerNick));
-    MainDiv.appendChild(PickTableState.CreateButton);
-    MainDiv.appendChild(PickTableState.JoinButton);
+    document.getElementById("CurNick").innerText = "Now play: " + PlayerNick;
 }
 
 function BuildPrepare() {
