@@ -21,6 +21,7 @@ namespace Hanabi
                 return DropsCards.Count;
             }
         }
+        private GameStory Story;
         private IDeck GameDeck;
         private List<ICard> DropsCards;
         private IPlayer[] Players;
@@ -67,6 +68,7 @@ namespace Hanabi
                 countColors = 5;
             Tabel = new int[countColors];
             DropsCards = new List<ICard>();
+            Story = new GameStory();
         }
         public ICard DropIndexCard(int NumCard)
         {
@@ -78,6 +80,7 @@ namespace Hanabi
                 return false;
             Players[NumPlayer].ReceiveHintColor(NumColor);
             CountHints--;
+            Story.HintColor(CurrentPlayer, NumPlayer, NumColor);
             UpdateAfter();
             return true;
         }
@@ -88,6 +91,7 @@ namespace Hanabi
             Players[NumPlayer].ReceiveHintNumber(Number);
             CountHints--;
             UpdateAfter();
+            Story.Hintnumber(CurrentPlayer, NumPlayer, Number);
             return true;
         }
         public bool PlaceCard(int NumCard)
@@ -97,11 +101,14 @@ namespace Hanabi
             ICard cards = Players[CountPlayers].CardByIndex(NumCard);
             if (Tabel[cards.Color] + 1 == cards.Number)
             {
+                Story.PlaceCard(CurrentPlayer, cards.Color, cards.Number);
                 Tabel[cards.Color]++;
                 Result++;
             }
             else
             {
+                Story.MakeFall(CurrentPlayer, cards.Color, cards.Number);
+                DropsCards.Add(cards);
                 CountFall++;
                 if (CountFall == 3)
                     GameIsEnd = true;
@@ -116,11 +123,13 @@ namespace Hanabi
         {
             if (NumCard >= CardsOnHand || NumCard < 0 || GameIsEnd || CountHints == 8)
                 return false;
-            DropsCards.Add(Players[CurrentPlayer].DropCard(NumCard));
+            var cards = Players[CurrentPlayer].DropCard(NumCard);
+            DropsCards.Add(cards);
             CountHints++;
             ICard next = TryTakeCard();
             if (next != null)
                 Players[CurrentPlayer].TakeCard(next);
+            Story.DropCard(CurrentPlayer, cards.Color, cards.Number);
             UpdateAfter();
             return true;
         }
@@ -143,6 +152,7 @@ namespace Hanabi
             {
                 ans.Players[i] = Players[i].GetInfo(i == numPlayer);
             }
+            ans.Story = Story.GetInfo();
             return ans;
         }
         private void UpdateAfter()
@@ -192,5 +202,6 @@ namespace Hanabi
         public GameType CurrentGameType { get; set; }
         public ICard[] DropsCards { get; set; }
         public PlayerInfo[] Players { get; set; }
+        public Event[] Story { get; set; }
     }
 }
