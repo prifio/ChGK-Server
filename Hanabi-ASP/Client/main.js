@@ -17,6 +17,10 @@ function init() {
     PrepareState = {
         PlayerList: null
     };
+    GameState = {
+        StoryLen: 0,
+        DropLen: 0
+    };
     info = null
     MainDiv = document.getElementById("main");
     PlayerPassword = "";
@@ -131,8 +135,7 @@ function JoinTableEvent() {
     clearInterval(tim);
 }
 
-function BackEvent()
-{
+function BackEvent() {
     NowState = "PickTable";
     BuildPickTable();
     tim = setInterval(UpDate, 1000);
@@ -141,8 +144,24 @@ function BackEvent()
 function UpdatePrepate() {
 }
 
-function UpDateGame() {
+function UpDateStory() {
+    while (info.Table.Game.Story.length > GameState.StoryLen) {
+        //add to story
+        GameState.StoryLen += 1;
+    }
+}
 
+function UpDateDrop() {
+    while (info.Table.Game.DropsCard.length > GameState.DropLen) {
+        var card = info.Table.Game.DropsCard[GameState.DropLen];
+        AddToDrop(card.Color, card.Number);
+        GameState.DropLen += 1;
+    }
+}
+
+function UpDateGame() {
+    UpDateStory();
+    UpDateDrop
 }
 
 function BuildLogIn(type) {
@@ -216,7 +235,7 @@ function BuildPrepare() {
 }
 
 function BuildGame() {
-
+    GameState.StoryLen = 0;
 }
 
 function ClearMainDiv() {
@@ -228,4 +247,8 @@ function CreateComponentP(text) {
     var elem = document.createElement("p");
     elem.innerText = text;
     return elem;
+}
+
+function AddToDrop(color, number) {
+
 }
