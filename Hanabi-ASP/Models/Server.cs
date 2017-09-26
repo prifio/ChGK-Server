@@ -206,25 +206,25 @@ namespace Hanabi_ASP.Models
             ans.NickById = new Dictionary<int, string>();
             if (Accounts[idPlayer].NowPlay)
             {
-                ans.IdTabel = Accounts[idPlayer].TableId;
+                ans.IdTable = Accounts[idPlayer].TableId;
                 ans.Table = Tables[Accounts[idPlayer].TableId].GetTableInfo(idPlayer);
                 for (int i = 0; i < ans.Table.Players.Length; ++i)
                     ans.NickById.Add(ans.Table.Players[i], Accounts[ans.Table.Players[i]].Nick);
             }
             else
             {
-                ans.IdTabel = -1;
+                ans.IdTable = -1;
                 ans.Table = null;
                 ans.NickById.Add(idPlayer, Accounts[idPlayer].Nick);
             }
-            return null;
+            return ans;
         }
     }
 
     public class ServerInfo
     {
         public int IdPlayer { get; set; }
-        public int IdTabel { get; set; }
+        public int IdTable { get; set; }
         public Dictionary<int, string> NickById { get; set; }
         public TableInfo Table { get; set; }
     }

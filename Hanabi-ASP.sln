@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hanabi-ASP", "Hanabi-ASP\Hanabi-ASP.csproj", "{608D9CDC-8896-46E9-8664-0F56CEB6D370}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hanabi-ASP", "Hanabi-ASP\Hanabi-ASP.csproj", "{C2A3301F-1B15-4523-BC75-21F3542CD10F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{608D9CDC-8896-46E9-8664-0F56CEB6D370}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{608D9CDC-8896-46E9-8664-0F56CEB6D370}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{608D9CDC-8896-46E9-8664-0F56CEB6D370}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{608D9CDC-8896-46E9-8664-0F56CEB6D370}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2A3301F-1B15-4523-BC75-21F3542CD10F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2A3301F-1B15-4523-BC75-21F3542CD10F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2A3301F-1B15-4523-BC75-21F3542CD10F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2A3301F-1B15-4523-BC75-21F3542CD10F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4536128B-6489-47D1-8EC6-8128A8FD99E5}
 	EndGlobalSection
 EndGlobal

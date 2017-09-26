@@ -14,7 +14,7 @@ namespace Hanabi
         public int CountFall { get; private set; }
         public int Result { get; private set; }
         public bool GameIsEnd { get; private set; }
-        public int[] Tabel { get; private set; }
+        public int[] Table { get; private set; }
         public GameType CurrentGameType { get; private set; }
         public int DropCount {
             get {
@@ -66,7 +66,7 @@ namespace Hanabi
             int countColors = 6;
             if (gt == GameType.FiveColor)
                 countColors = 5;
-            Tabel = new int[countColors];
+            Table = new int[countColors];
             DropsCards = new List<ICard>();
             Story = new GameStory();
         }
@@ -99,10 +99,10 @@ namespace Hanabi
             if (NumCard <= 0 || NumCard > 5 || GameIsEnd)
                 return false;
             ICard cards = Players[CountPlayers].CardByIndex(NumCard);
-            if (Tabel[cards.Color] + 1 == cards.Number)
+            if (Table[cards.Color] + 1 == cards.Number)
             {
                 Story.PlaceCard(CurrentPlayer, cards.Color, cards.Number);
-                Tabel[cards.Color]++;
+                Table[cards.Color]++;
                 Result++;
             }
             else
@@ -141,9 +141,9 @@ namespace Hanabi
             ans.CountHints = CountHints;
             ans.Result = Result;
             ans.GameIsEnd = GameIsEnd;
-            ans.Table = new int[Tabel.Length];
-            for (int i = 0; i < Tabel.Length; i++)
-                ans.Table[i] = Tabel[i];
+            ans.Table = new int[Table.Length];
+            for (int i = 0; i < Table.Length; i++)
+                ans.Table[i] = Table[i];
             ans.DropsCards = new ICard[DropsCards.Count];
             for (int i = 0; i < DropsCards.Count; i++)
                 ans.DropsCards[i] = new Card(DropsCards[i].Color, DropsCards[i].Number, CurrentGameType);
@@ -173,7 +173,7 @@ namespace Hanabi
         int CountFall { get; }
         int Result { get; }
         bool GameIsEnd { get; }
-        int[] Tabel { get; }
+        int[] Table { get; }
         GameType CurrentGameType { get; }
         ICard DropIndexCard(int NumCard);
         bool UseHintColor(int NumPlayer, int NumColor);

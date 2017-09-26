@@ -1,4 +1,27 @@
 ﻿window.onload = init;
+$.post = function (url, data, CallBack, dataType) {
+	return jQuery.ajax({
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/' + dataType
+		},
+		'type': 'POST',
+		'url': url,
+		'data': JSON.stringify(data),
+		'dataType': dataType,
+		'success': CallBack
+	});
+};
+
+$.get = function (url, data, CallBack) {
+	return jQuery.ajax({
+		'type': 'GET',
+		'url': url,
+		'data': data,
+		'response': 'xml',
+		'success': CallBack
+	});
+};
 
 function init() {
     LogInState = {
@@ -21,7 +44,7 @@ function init() {
         StoryLen: 0,
         DropLen: 0
     };
-    info = null
+	info = null;
     MainDiv = document.getElementById("main");
     PlayerPassword = "";
     PlayerId = -1;
@@ -38,7 +61,7 @@ function UpDateCallBack(newInfo) {
     if (NowState == "LogIn")
         return;
     var NewState;
-    if (newInfo.TableId == -1)
+    if (newInfo.idTable == -1)
         Newstate = "PickTable";
     else if (!newInfo.Table.GameStarted)
         NewState = "Prepare";
@@ -161,7 +184,7 @@ function UpDateDrop() {
 
 function UpDateGame() {
     UpDateStory();
-    UpDateDrop
+	UpDateDrop;
 }
 
 function BuildLogIn(type) {

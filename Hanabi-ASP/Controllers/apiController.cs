@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web.Http;
 using System.ComponentModel.DataAnnotations;
 using Hanabi;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Hanabi_ASP.Controllers
 {
-    public class apiController : ApiController
+    public class apiController : Controller
     {
         static Models.Server MainServer = new Models.Server();
 
