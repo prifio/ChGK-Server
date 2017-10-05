@@ -90,7 +90,7 @@ namespace Hanabi_ASP.Controllers
         {
             if (!MainServer.CheckPassPlayer(s.idPlayer, s.PlayerPassword))
                 return false;
-            return MainServer.ChangeGameType(s.idPlayer, s.SeatsInfo);
+            return MainServer.ChangeSeatsCount(s.idPlayer, s.SeatsCount);
         }
 
         [HttpPost]
@@ -181,7 +181,7 @@ namespace Hanabi_ASP.Controllers
         public int idPlayer { get; set; }
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string PlayerPassword { get; set; }
-        public int SeatsInfo { get; set; }
+        public int SeatsCount { get; set; }
     }
     
     public class GameTypeInfo

@@ -27,7 +27,7 @@ namespace Hanabi
         {
             if ((Color == NumColor || (KnowColor == -1 && Color == 5 && CurrentGameType == GameType.RainbowIsEvery)))
                 KnowColor = NumColor;
-            else if(Color == 5 && CurrentGameType == GameType.RainbowIsEvery)
+            else if(Color == 5 && CurrentGameType == GameType.RainbowIsEvery && KnowColor != Color)
                 KnowColor = 5;
         }
         public void ReceiveHintNumber(int Number)
@@ -35,7 +35,7 @@ namespace Hanabi
             if (this.Number == Number)
                 KnowNumber = Number;
         }
-        private Card(int Colo, int Number, int KnowColor, int KnowNumber)
+        private Card(int Color, int Number, int KnowColor, int KnowNumber)
         {
             this.Color = Color;
             this.Number = Number;

@@ -60,7 +60,7 @@ namespace Hanabi_ASP.Models
             if (!NickIsGood(name) || !PassIsGood(pass))
                 return -1;
             int id = Utily.GetTag();
-            Tables.Add(id, new WebTable(idPlayer, pass));
+            Tables.Add(id, new WebTable(idPlayer, pass, name));
             GetIdByName.Add(name, id);
             Accounts[idPlayer].JoinTable(id);
             return id;
@@ -101,6 +101,7 @@ namespace Hanabi_ASP.Models
                     {
                         Accounts[pls[i]].LeaveTable();
                     }
+                    GetIdByName.Remove(Tables[id].Name);
                     Tables.Remove(id);
                     return true;
                 }
@@ -163,7 +164,7 @@ namespace Hanabi_ASP.Models
             int id = Accounts[idHow].TableId;
             if (Tables[id].IdAdmin != idHow)
                 return false;
-            return Tables[id].LeavePlayer(idKicks);
+            return LeaveTable(idKicks);
         }
         public bool ForceStandUp(int idHow, int idKicks)
         {

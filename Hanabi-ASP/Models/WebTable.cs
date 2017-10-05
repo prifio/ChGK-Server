@@ -36,11 +36,13 @@ namespace Hanabi_ASP.Models
         public int IdAdmin { get; private set; }
         public string Password { get; private set; }
         public Hanabi.GameType CurrentGameType { get; private set; }
+        public string Name { get; private set; }
         private HashSet<int> Players;
         private List<int> Seats;
 
-        public WebTable(int idAdmin, string pass)
+        public WebTable(int idAdmin, string pass, string Name)
         {
+            this.Name = Name;
             this.IdAdmin = idAdmin;
             Players = new HashSet<int>();
             Seats = new List<int>();
@@ -63,9 +65,12 @@ namespace Hanabi_ASP.Models
         }
         public bool LeavePlayer(int id)
         {
-            if (Players.Contains(id) && GameStarted)
+            if (Players.Contains(id) && !GameStarted)
             {
                 Players.Remove(id);
+                for (int i = 0; i < SeatCount; ++i)
+                    if (Seats[i] == id)
+                        Seats[i] = -1;
                 return true;
             }
             return false;
@@ -139,7 +144,7 @@ namespace Hanabi_ASP.Models
                 return false;
             return TableGame.UseHintNumber(numPlayer, Number);
         }
-        public bool PlaceCard(int id,  int numCard)
+        public bool PlaceCard(int id, int numCard)
         {
             if (!GameStarted || Seats[TableGame.CurrentPlayer] != id)
                 return false;
@@ -186,6 +191,9 @@ namespace Hanabi_ASP.Models
             }
             else
                 ans.Game = null;
+            ans.GameStarted = GameStarted;
+            ans.IdAdmin = IdAdmin;
+            ans.CurrentGameType = CurrentGameType;
             return ans;
         }
     }
@@ -194,7 +202,9 @@ namespace Hanabi_ASP.Models
     {
         public int[] Players { get; set; }
         public int[] Seats { get; set; }
+        public Hanabi.GameType CurrentGameType { get; set; }
         public bool GameStarted { get; set; }
+        public int IdAdmin { get; set; }
         public Hanabi.GameInfo Game { get; set; }
     }
 }

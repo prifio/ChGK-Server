@@ -90,25 +90,27 @@ namespace Hanabi
                 return false;
             Players[NumPlayer].ReceiveHintNumber(Number);
             CountHints--;
+            Story.HintNumber(CurrentPlayer, NumPlayer, Number);
             UpdateAfter();
-            Story.Hintnumber(CurrentPlayer, NumPlayer, Number);
             return true;
         }
         public bool PlaceCard(int NumCard)
         {
-            if (NumCard <= 0 || NumCard > 5 || GameIsEnd)
+            if (NumCard < 0 || NumCard >= Players[CurrentPlayer].CountCard  || GameIsEnd)
                 return false;
-            ICard cards = Players[CountPlayers].CardByIndex(NumCard);
-            if (Table[cards.Color] + 1 == cards.Number)
+            ICard card = Players[CurrentPlayer].DropCard(NumCard);
+            if (Table[card.Color] + 1 == card.Number)
             {
-                Story.PlaceCard(CurrentPlayer, cards.Color, cards.Number);
-                Table[cards.Color]++;
+                Story.PlaceCard(CurrentPlayer, card.Color, card.Number);
+                Table[card.Color]++;
                 Result++;
+                if (Table[card.Color] == 5 && CountHints < 8)
+                    ++Table[card.Color];
             }
             else
             {
-                Story.MakeFall(CurrentPlayer, cards.Color, cards.Number);
-                DropsCards.Add(cards);
+                Story.MakeFall(CurrentPlayer, card.Color, card.Number);
+                DropsCards.Add(card);
                 CountFall++;
                 if (CountFall == 3)
                     GameIsEnd = true;
@@ -137,6 +139,7 @@ namespace Hanabi
         {
             var ans = new GameInfo();
             ans.CurrentGameType = CurrentGameType;
+            ans.CurrentPlayer = CurrentPlayer;
             ans.CountFall = CountFall;
             ans.CountHints = CountHints;
             ans.Result = Result;
@@ -153,6 +156,7 @@ namespace Hanabi
                 ans.Players[i] = Players[i].GetInfo(i == numPlayer);
             }
             ans.Story = Story.GetInfo();
+            ans.CardsInDeck = GameDeck.CountCards;
             return ans;
         }
         private void UpdateAfter()
@@ -197,6 +201,7 @@ namespace Hanabi
         public int CountHints { get; set; }
         public int CountFall { get; set; }
         public int Result { get; set; }
+        public int CardsInDeck { get; set; }
         public bool GameIsEnd { get; set; }
         public int[] Table { get; set; }
         public GameType CurrentGameType { get; set; }

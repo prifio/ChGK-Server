@@ -18,7 +18,7 @@ namespace Hanabi
             ans.PlayerTo = to;
             EventsList.Add(ans);
         }
-        public void Hintnumber(int from, int to, int Number)
+        public void HintNumber(int from, int to, int Number)
         {
             var ans = new Event();
             ans.Type = EventType.HintNumber;

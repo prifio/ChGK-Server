@@ -18,6 +18,11 @@ namespace Hanabi
 
         private Queue<ICard> CardQueue;
         
+        private bool CardBad(int ch)
+        {
+            return ch >= 50 && ch <= 53;
+        }
+
         public Deck(GameType gt)
         {
             CardQueue = new Queue<ICard>();
@@ -31,8 +36,12 @@ namespace Hanabi
                 seq[i] = i;
             for (int i = 1; i < len; ++i)
                 Utily.Swap<int>(ref seq[i], ref seq[Utily.Next() % (i + 1)]);
-            for (int i = 0; i < len; i++)
+            int mv = 0;
+            while (CardBad(seq[mv]))
+                ++mv;
+            for (int j = 0; j < len; j++)
             {
+                int i = (j + mv) % len;
                 if (seq[i] >= 50)
                     CardQueue.Enqueue(new Card(5, seq[i] - 49, gt));
                 else
@@ -44,7 +53,7 @@ namespace Hanabi
                     else if (num == 9)
                         num = 5;
                     else
-                        num = (num - 1) / 2;
+                        num = (num + 1) / 2;
                     CardQueue.Enqueue(new Card(color, num, gt));
                 }
             }
