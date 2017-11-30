@@ -105,7 +105,7 @@ namespace Hanabi
                 Table[card.Color]++;
                 Result++;
                 if (Table[card.Color] == 5 && CountHints < 8)
-                    ++Table[card.Color];
+                    ++CountHints;
             }
             else
             {
@@ -153,17 +153,21 @@ namespace Hanabi
             ans.Players = new PlayerInfo[CountPlayers];
             for (int i = 0; i < CountPlayers; ++i)
             {
-                ans.Players[i] = Players[i].GetInfo(i == numPlayer);
+                ans.Players[i] = Players[i].GetInfo(i == numPlayer && !GameIsEnd);
             }
             ans.Story = Story.GetInfo();
             ans.CardsInDeck = GameDeck.CountCards;
+            if (!LastCicle)
+                ans.LastPlayer = -1;
+            else
+                ans.LastPlayer = (CurrentPlayer + LostTurn - 1 + CountPlayers) % CountPlayers;
             return ans;
         }
         private void UpdateAfter()
         {
             if (LastCicle)
                 --LostTurn;
-            GameIsEnd = GameIsEnd || (LastCicle && LostTurn == 0);
+            GameIsEnd = GameIsEnd || (LastCicle && LostTurn == 0) || Result == 5 * Table.Length;
             CurrentPlayer = (CurrentPlayer + 1) % CountPlayers;
         }
     }
@@ -208,5 +212,6 @@ namespace Hanabi
         public ICard[] DropsCards { get; set; }
         public PlayerInfo[] Players { get; set; }
         public Event[] Story { get; set; }
+        public int LastPlayer { get; set; }
     }
 }

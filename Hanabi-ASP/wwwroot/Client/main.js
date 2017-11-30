@@ -66,7 +66,8 @@ function init() {
 		Descriprion: null,
 		DialogPlayer: -1,
 		CardsInDeck: null,
-		EndGameP: null
+		EndGameP: null,
+		Interesting: null
 	};
 	info = null;
 	MainDiv = document.getElementById("main");
@@ -211,8 +212,12 @@ function PickPlayerEvent(num) {
 }
 
 function DialogBackEvent() {
-	if (GameState.DialogType == "Player" || GameState.DialogType == "Card")
+	if (GameState.DialogType == "Player")
 		BuildPickTurn();
+	else if (GameState.DialogType == "Card") {
+		DestroyPickCard(GameState.YouSeat);
+		BuildPickTurn();
+	}
 	else if (GameState.DialogType == "Type")
 		BuildPickPlayerForHint();
 	else if (GameState.DialogType == "Color" || GameState.DialogType == "Number")
@@ -250,7 +255,10 @@ function LayCardEvent(num) {
 		idPlayer: PlayerId,
 		PlayerPassword: PlayerPassword,
 		numCard: num
-	}, function (_) { }, "json");
+	}, function (b) {
+		if (b)
+			DestroyPickCard(GameState.YouSeat);
+	}, "json");
 }
 
 function DropCardEvent(num) {
@@ -258,10 +266,13 @@ function DropCardEvent(num) {
 		idPlayer: PlayerId,
 		PlayerPassword: PlayerPassword,
 		numCard: num
-	}, function (_) { }, "json");
+	}, function (b) {
+		if (b)
+			DestroyPickCard(GameState.YouSeat);
+	}, "json");
 }
 
-function ChangeGameModeEvent(i){
+function ChangeGameModeEvent(i) {
 	$.post("../api/ChangeGameType", {
 		idPlayer: PlayerId,
 		PlayerPassword: PlayerPassword,
@@ -335,7 +346,7 @@ function UpDatePlayersList() {
 	if (IsNew) {
 		PrepState.PlayersList.innerHTML = "";
 		PrepState.OldPlayersList = [];
-		for (var i = 0; i < Keys.length; ++i){
+		for (var i = 0; i < Keys.length; ++i) {
 			var NowId = info.Table.Players[Keys[i]];
 			var elem = document.createElement("div");
 			var PText = CreateElementP(info.NickById[NowId]);
@@ -368,7 +379,7 @@ function UpDateSeats() {
 			elem.appendChild(BuildSeats(i));
 		elem = document.getElementById("Pl2");
 		elem.innerHTML = "";
-		for (var i = ind; i < SeatsArr.length; i++)
+		for (var i = SeatsArr.length - 1; i >= ind; i--)
 			elem.appendChild(BuildSeats(i));
 		PrepState.OldSeats = [];
 		for (var i = 0; i < SeatsArr.length; ++i)
@@ -443,7 +454,7 @@ function UpDateStory() {
 			elem.setAttribute("class", "text-success");
 		}
 		if (NowEvent.Type == 2) {
-			elem.innerText = info.NickById[info.Table.Seats[NowEvent.PlayerFrom]] + " lay " +
+			elem.innerText = info.NickById[info.Table.Seats[NowEvent.PlayerFrom]] + " laid " +
 				NowEvent.Number;
 			elem.appendChild(GetSuit(NowEvent.Color));
 			elem.innerHTML += " on the table";
@@ -456,12 +467,17 @@ function UpDateStory() {
 			elem.setAttribute("class", "text-danger");
 		}
 		if (NowEvent.Type == 4) {
-			elem.innerText = info.NickById[info.Table.Seats[NowEvent.PlayerFrom]] + " droped " +
+			elem.innerText = info.NickById[info.Table.Seats[NowEvent.PlayerFrom]] + " dropped " +
 				NowEvent.Number;
 			elem.appendChild(GetSuit(NowEvent.Color));
 			elem.setAttribute("class", "text-warning");
 		}
+		if (NowEvent.Type >= 2)
+			UpDateInteresting();
+		var is_down = GameState.History.scrollHeight <= GameState.History.scrollTop + GameState.History.offsetHeight;
 		GameState.History.appendChild(elem);
+		if (is_down)
+			GameState.History.scrollTop = GameState.History.scrollHeight;
 		GameState.StoryLen += 1;
 	}
 }
@@ -471,6 +487,8 @@ function UpDateDrop() {
 		var card = info.Table.Game.DropsCards[GameState.DropLen];
 		AddToDrop(card.Color, card.Number);
 		GameState.DropLen += 1;
+		if (GameState.DropLen % 3 == 0)
+			GameState.Drops.appendChild(document.createElement("br"));
 	}
 }
 
@@ -506,7 +524,7 @@ function UpDatePlayer(num) {
 			};
 		}
 		for (var i = CardsArr.length; i < 5; ++i)
-			GameState.PlayersCards[num].children[i].setAttribute("stye", "display:none;");
+			GameState.PlayersCards[num].children[i].setAttribute("style", "display:none;");
 	}
 	for (var i = 0; i < CardsArr.length; ++i) {
 		var CurCard = GameState.OldCards[num][i];
@@ -548,6 +566,18 @@ function UpDatePlayer(num) {
 		GameState.PlayersNick[num].setAttribute("class", "Name Active");
 	else
 		GameState.PlayersNick[num].setAttribute("class", "Name");
+	while (GameState.PlayersNick[num].children.length > 0)
+		GameState.PlayersNick[num].removeChild(GameState.PlayersNick[num].children[GameState.PlayersNick[num].children.length - 1]);
+	if (info.Table.Game.CurrentPlayer == num) {
+		var elem = document.createElement("i");
+		elem.setAttribute("class", "glyphicon glyphicon-flag");
+		GameState.PlayersNick[num].appendChild(elem);
+	}
+	if (info.Table.Game.LastPlayer == num) {
+		var elem = document.createElement("i");
+		elem.setAttribute("class", "glyphicon glyphicon-warning-sign");
+		GameState.PlayersNick[num].appendChild(elem);
+	}
 }
 
 function UpDateDialog() {
@@ -561,6 +591,22 @@ function UpDateDialog() {
 	}
 }
 
+function UpDateInteresting() {
+	var NowElem = GameState.Interesting;
+	NowElem.innerHTML = "";
+	var DropArr = info.Table.Game.DropsCards;
+	var cnt = 0;
+	for (var i = 0; i < DropArr.length; ++i) {
+		if (info.Table.Game.Table[DropArr[i].Color] < DropArr[i].Number) {
+			NowElem.appendChild(GetCard(DropArr[i].Color, DropArr[i].Number));
+			++cnt;
+			if (cnt % 3 == 0)
+				NowElem.appendChild(document.createElement("br"));
+		}
+
+	}
+}
+
 function UpDateGame() {
 	UpDateStory();
 	UpDateDrop();
@@ -570,7 +616,7 @@ function UpDateGame() {
 	GameState.ScroeP.innerText = info.Table.Game.Result;
 	GameState.CardsInDeck.innerText = info.Table.Game.CardsInDeck;
 	if (info.Table.Game.GameIsEnd)
-		GameState.EndGameP.innerText = "Game was ended";
+		GameState.EndGameP.innerText = "Game over";
 	else if (info.Table.Game.CardsInDeck == 0)
 		GameState.EndGameP.innerText = "Last circle!";
 	else if (info.Table.Game.CardsInDeck < 5)
@@ -580,6 +626,12 @@ function UpDateGame() {
 	for (var i = 0; i < info.Table.Seats.length; ++i)
 		UpDatePlayer(i);
 	UpDateDialog();
+}
+
+function DestroyPickCard(num) {
+	GameState.PlayersCards[num].removeAttribute("class");
+	for (var i = 0; i < 5; ++i)
+		GameState.PlayersCards[num].children[i].onclick = null;
 }
 
 function BuildSeats(num) {
@@ -615,6 +667,7 @@ function BuildPickCard(IsLay) {
 			bt.innerText += "?";
 		else
 			bt.innerText += CardsArr[i].KnowNumber;
+		bt.innerText += " ";
 		bt.appendChild(GetSuit(CardsArr[i].KnowColor));
 		if (IsLay)
 			bt.onclick = CreateNiceFun(LayCardEvent, i);
@@ -630,6 +683,12 @@ function BuildPickCard(IsLay) {
 	var bc = CreateButton("Back");
 	bc.onclick = DialogBackEvent;
 	GameState.DialogButtons.appendChild(bc);
+	GameState.PlayersCards[GameState.YouSeat].setAttribute("class", "ClickCard");
+	for (var i = 0; i < CardsArr.length; ++i)
+		if (IsLay)
+			GameState.PlayersCards[GameState.YouSeat].children[i].onclick = CreateNiceFun(LayCardEvent, i);
+		else
+			GameState.PlayersCards[GameState.YouSeat].children[i].onclick = CreateNiceFun(DropCardEvent, i);
 	GameState.DialogType = "Card";
 }
 
@@ -708,12 +767,12 @@ function BuildPickPlayerForHint() {
 }
 
 function BuildPickTurn() {
-	GameState.Descriprion.innerText = "Pick type of turn";
+	GameState.Descriprion.innerText = "Choose your action";
 	var elem = document.createElement("div");
 	elem.setAttribute("class", "btn-group-vertical");
 	var bt
 	if (info.Table.Game.CountHints > 0) {
-		bt = CreateButton("Get hint");
+		bt = CreateButton("Give a hint");
 		bt.onclick = PickHintEvent;
 		elem.appendChild(bt);
 	}
@@ -867,7 +926,7 @@ function BuildPrepare() {
 			CountPlayers.children[i].children[0].innerText = i + 3;
 		}
 		PrepState.StartButton = document.getElementById("Start");
-		PrepState.StartButton.onclick = StartGameEvent;		
+		PrepState.StartButton.onclick = StartGameEvent;
 	}
 	else {
 		PrepState.IsAdmin = false;
@@ -910,6 +969,8 @@ function BuildGame() {
               <div id = "History" class="tab-pane fade in active" style = "vertical-align: bottom; overflow: auto; height: 50vh">
               </div>
               <div id="DropCrt" class="tab-pane fade" style = "vertical-align: bottom; overflow: auto; height: 50vh">
+			  </div>
+			  <div id="IntDrop" class="tab-pane fade" style = "vertical-align: bottom; overflow: auto; height: 50vh">
               </div>
           </div>
           <ul class="nav nav-tabs" style="border-bottom: 1px solid #ddd;
@@ -919,6 +980,7 @@ function BuildGame() {
     margin-bottom: 1vh; display: block;">
             <li class="active" style="display: block;"><a data-toggle = "tab" href = "#History" >History</a></li>
             <li style="display: block;" ><a data-toggle = "tab" href = "#DropCrt">Dropped cards</a></li>
+		    <li style="display: block;" ><a data-toggle = "tab" href = "#IntDrop">Intresting</a></li>
           </ul></div>
           <div style="clear: both;"></div>
         <div>
@@ -999,10 +1061,10 @@ function BuildGame() {
 	var elem = document.getElementById("Pl1");
 	var ind = MyDiv(info.Table.Players.length + 1, 2);
 	for (var i = 0; i < ind; i++)
-		elem.appendChild(BuildPlayer(i));
+		elem.appendChild(BuildPlayer((i + GameState.YouSeat) % info.Table.Players.length));
 	elem = document.getElementById("Pl2");
-	for (var i = ind; i < info.Table.Players.length; i++)
-		elem.appendChild(BuildPlayer(i));
+	for (var i = info.Table.Players.length - 1; i >= ind; i--)
+		elem.appendChild(BuildPlayer((i + GameState.YouSeat) % info.Table.Players.length));
 	if (info.Table.IdAdmin == PlayerId) {
 		GameState.EndGameButton = document.getElementById("EndGame");
 		GameState.EndGameButton.onclick = EndGameEvent;
@@ -1017,6 +1079,7 @@ function BuildGame() {
 	GameState.Descriprion = document.getElementById("Desk");
 	GameState.CardsInDeck = document.getElementById("Deck");
 	GameState.EndGameP = document.getElementById("EndDesc");
+	GameState.Interesting = document.getElementById("IntDrop");
 }
 
 function ClearMainDiv() {
@@ -1078,14 +1141,4 @@ function CreateNiceFun(CallBack, par) {
 
 function MyDiv(x, y) {
 	return (x - x % y) / y;
-}
-
-function GetHTML(who) {
-	var txt, ax, el = document.createElement("div");
-	el.appendChild(who.cloneNode(false));
-	txt = el.innerHTML;
-	ax = txt.indexOf('>') + 1;
-	txt = txt.substring(0, ax) + who.innerHTML + txt.substring(ax);
-	el = null;
-	return txt;
 }
